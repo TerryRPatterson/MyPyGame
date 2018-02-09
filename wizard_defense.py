@@ -88,11 +88,36 @@ class Character(pygame.sprite.Sprite):
     def update(self):
         self.position = (self.velocity[0] + self.position[0], self.velocity[1] + self.position[1])
 
-    def animate(self,type,duration):
+    def animate(self,type=idle,duration=1):
+        if type == "death":
+            self.anim_list = death
+            self.animating = True
 
-    def animating():
-        if animating == True:
-            pass
+        if type == "walk":
+            self.anim_list = walking
+            self.animating = True
+
+        if type == "attack":
+            self.animating = True
+            self.anim_list = attacks
+
+        if type == "idle":
+            self.anim_list = idles
+            self.animating = False
+
+        start_time = pygame.time.get_ticks()
+        self.stop_time = start_time + (duration * 1000)
+        self.frames = len(anim_list)
+        self.frame_rate = duration / self.frames
+
+
+    def animating(self):
+        if self.stop_time < pygame.time.get_ticks():
+            animating = False
+            current_image = self.idle[0]
+            self.animate()
+        else:
+
 
 
 class PlayerCharacter(Character):
