@@ -111,12 +111,12 @@ class Character(pygame.sprite.Sprite):
         self.frame_rate = duration / self.frames
 
 
-    def animating(self):
-        if self.stop_time < pygame.time.get_ticks():
-            animating = False
-            current_image = self.idle[0]
-            self.animate()
-        else:
+    #def animating(self):
+        #if self.stop_time < pygame.time.get_ticks():
+            #animating = False
+            #current_image = self.idle[0]
+            #self.animate()
+        #else:
 
 
 
