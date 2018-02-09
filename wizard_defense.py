@@ -1,4 +1,4 @@
-import pygame, random, os
+import pygame, random, os, glob
 
 screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN|pygame.HWSURFACE)
 def main():
@@ -6,7 +6,7 @@ def main():
     enemy_list_location = "enemy_names.txt"
     enemy_names = import_list(enemy_list_location)
     origin = (0,0)
-    player = PlayerCharacter( health=10, power=10, name="Test", image_set="Assests/wizard",pos=(0,0),move_rate=5)
+    player = PlayerCharacter( health=10, power=10, name="Test", image_set="Assets/wizard",pos=(0,0),move_rate=5)
     done = False
     background = pygame.image.load("Assets/Background.png")
     while not done:
@@ -41,7 +41,7 @@ def main():
                 if event.key == pygame.K_LEFT:
                     player.move(change_vel=(player.move_rate,0))
 
-        screen.blit(player.image_set,player.position)
+        screen.blit(player.current_image,player.position)
         player.update()
         pygame.display.update()
     pygame.quit()
@@ -57,68 +57,79 @@ class Character(pygame.sprite.Sprite):
         self.velocity = vel
         self.animating =  False
         self.move_rate = move_rate
-        self.image_current = pygame.transform.scale(pygame.image.load("Assets/wizard/idle/1_IDLE_000.png"),(int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1)))
+        self.current_image = pygame.transform.scale(pygame.image.load("Assets/wizard/idle/1_IDLE_000.png"),(int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1)))
 
         #Loading sprites
-        idles = []
-        attacks = []
-        walking = []
-        death = []
-        for image in os.listdir(os.path("".join(image_set,"/idle"))):
-            current_image = pygame.image.load(image)
-            idles.append(pygame.transform.scale(current_image,int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1)))
+        self.idles = []
+        self.attacks = []
+        self.walking = []
+        self.death = []
+        idle_paths = glob.glob(image_set + "/idle/*.png")
+        attack_paths = glob.glob(image_set + "/attack/*.png")
+        walk_paths = glob.glob(image_set + "/walk/*.png")
+        death_paths = glob.glob(image_set + "/death/*.png")
 
-        for image in os.listdir(os.path("".join(image_set,"/attack"))):
-            current_image = pygame.image.load(image)
-            attacks.append(pygame.transform.scale(current_image,int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1)))
+        for image in idle_paths:
+            current_image = pygame.image.load(image).convert_alpha()
+            self.idles.append(pygame.transform.scale(current_image,(int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1))))
 
-        for image in os.listdir(os.path("".join(image_set,"/walk"))):
-            current_image = pygame.image.load(image)
-            idles.append(pygame.transform.scale(current_image,int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1)))
+        for image in attack_paths:
+            current_image = pygame.image.load(image).convert_alpha()
+            self.attacks.append(pygame.transform.scale(current_image,(int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1))))
 
-        for image in os.listdir(os.path("".join(image_set,"/die"))):
-            current_image = pygame.image.load(image)
-            death.append(pygame.transform.scale(current_image,int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1)))
+        for image in walk_paths:
+            current_image = pygame.image.load(image).convert_alpha()
+            self.walking.append(pygame.transform.scale(current_image,(int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1))))
 
+        for image in death_paths:
+            current_image = pygame.image.load(image).convert_alpha()
+            self.death_paths.append(pygame.transform.scale(current_image,(int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1))))
+
+        self.animate()
     def attack(self,target):
         if self.alive and target.alive:
             target.health -= self.power
+
     def move(self, change_vel=(0,0)):
         self.velocity = (self.velocity[0] + change_vel[0], self.velocity[1] + change_vel[1])
+
     def update(self):
         self.position = (self.velocity[0] + self.position[0], self.velocity[1] + self.position[1])
+        self.update_animation()
 
-    def animate(self,type=idle,duration=1):
+    def animate(self,type="idle",duration=1):
         if type == "death":
-            self.anim_list = death
+            self.anim_list = self.death
             self.animating = True
 
         if type == "walk":
-            self.anim_list = walking
+            self.anim_list = self.walking
             self.animating = True
 
         if type == "attack":
             self.animating = True
-            self.anim_list = attacks
+            self.anim_list = self.attacks
 
         if type == "idle":
-            self.anim_list = idles
+            self.anim_list = self.idles
             self.animating = False
 
         start_time = pygame.time.get_ticks()
         self.stop_time = start_time + (duration * 1000)
-        self.frames = len(anim_list)
-        self.frame_rate = duration / self.frames
+        print(self.stop_time)
+        self.frames = len(self.anim_list)
+        self.frame_rate = (duration * 1000) / self.frames
 
 
-    #def animating(self):
-        #if self.stop_time < pygame.time.get_ticks():
-            #animating = False
-            #current_image = self.idle[0]
-            #self.animate()
-        #else:
-
-
+    def update_animation(self):
+        if self.stop_time < pygame.time.get_ticks():
+            self.animating = False
+            self.current_image = self.idles[0]
+            self.animate()
+        else:
+            frame_index = int(pygame.time.get_ticks() // self.frame_rate)
+            print(frame_index)
+            self.current_image = self.anim_list[frame_index]
 
 class PlayerCharacter(Character):
     def __init__(self, health=0 ,power=0, name="Test", image_set=None, points=0, lives=0, pos=(0,0), vel=(0,0), move_rate=10):
