@@ -40,7 +40,7 @@ def main():
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, health, power, name, image_set,pos_x,pos_y,vel_x,vel_y):
-        super(pygame.sprite.Sprite,self).__init__()
+        super().__init__()
         self.health = health
         self.power = power
         self.name = name
@@ -48,7 +48,7 @@ class Character(pygame.sprite.Sprite):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.vel_x = vel_x
-        self.vel_x = vel_y
+        self.vel_y = vel_y
     def attack(self,target):
         if self.alive and target.alive:
             target.health -= self.power
@@ -60,8 +60,8 @@ class Character(pygame.sprite.Sprite):
         self.pos_y += self.vel_y
 
 class PlayerCharacter(Character):
-    def __init__(self, health=0 ,power=0, name="Test", image_set=None, points=0, lives=0,pos_x=0,pos_y=0,vel_x=0, vel_y=0):
-        super(Character,self).__init__(health, power, name, image_set, pos_x, pos_y, vel_x,vel_y)
+    def __init__(self, health=0 ,power=0, name="Test", image_set=None, points=0, lives=0,pos_x=0,pos_y=0,vel_x=10, vel_y=10):
+        super().__init__(health, power, name, image_set, pos_x, pos_y, vel_x,vel_y)
         self.points = points
         self.lives = lives
 
