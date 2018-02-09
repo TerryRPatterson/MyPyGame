@@ -10,7 +10,6 @@ def main():
     screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN|pygame.HWSURFACE)
     done = False
     background = pygame.image.load("Assets/Background.png")
-    pygame.key.set_repeat(1,1)
     while not done:
         screen.blit(pygame.transform.scale(background,screen.get_size()),origin)
         for event in pygame.event.get():
@@ -35,6 +34,7 @@ def main():
                 if event.key == pygame.K_LEFT:
                     player.move(change_vel_x=10)
         screen.blit(player.image_set,(player.pos_x,player.pos_y))
+        player.update()
         pygame.display.update()
     pygame.quit()
 
@@ -60,7 +60,7 @@ class Character(pygame.sprite.Sprite):
         self.pos_y += self.vel_y
 
 class PlayerCharacter(Character):
-    def __init__(self, health=0 ,power=0, name="Test", image_set=None, points=0, lives=0,pos_x=0,pos_y=0,vel_x=10, vel_y=10):
+    def __init__(self, health=0 ,power=0, name="Test", image_set=None, points=0, lives=0,pos_x=0,pos_y=0,vel_x=0, vel_y=0):
         super().__init__(health, power, name, image_set, pos_x, pos_y, vel_x,vel_y)
         self.points = points
         self.lives = lives
