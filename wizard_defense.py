@@ -1,6 +1,9 @@
-import pygame, random, os, glob
-
+import random
+import glob
+import pygame
 screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN|pygame.HWSURFACE)
+
+
 def main():
     pygame.init()
     enemy_list_location = "enemy_names.txt"
@@ -67,7 +70,7 @@ class Character(pygame.sprite.Sprite):
         idle_paths = glob.glob(image_set + "/idle/*.png")
         attack_paths = glob.glob(image_set + "/attack/*.png")
         walk_paths = glob.glob(image_set + "/walk/*.png")
-        death_paths = glob.glob(image_set + "/death/*.png")
+        death_paths = glob.glob(image_set + "/die/*.png")
 
         for image in idle_paths:
             current_image = pygame.image.load(image).convert_alpha()
@@ -83,7 +86,7 @@ class Character(pygame.sprite.Sprite):
 
         for image in death_paths:
             current_image = pygame.image.load(image).convert_alpha()
-            self.death_paths.append(pygame.transform.scale(current_image,(int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1))))
+            self.death.append(pygame.transform.scale(current_image,(int(screen.get_size()[0]*0.1),int(screen.get_size()[1]*0.1))))
 
         self.animate()
     def attack(self,target):
@@ -97,7 +100,7 @@ class Character(pygame.sprite.Sprite):
         self.position = (self.velocity[0] + self.position[0], self.velocity[1] + self.position[1])
         self.update_animation()
 
-    def animate(self,type="idle",duration=1):
+    def animate(self,type="idle",duration=0.5):
         if type == "death":
             self.anim_list = self.death
             self.animating = True
@@ -114,9 +117,8 @@ class Character(pygame.sprite.Sprite):
             self.anim_list = self.idles
             self.animating = False
 
-        start_time = pygame.time.get_ticks()
-        self.stop_time = start_time + (duration * 1000)
-        print(self.stop_time)
+        self.start_time = pygame.time.get_ticks()
+        self.stop_time = self.start_time + (duration * 1000)
         self.frames = len(self.anim_list)
         self.frame_rate = (duration * 1000) / self.frames
 
@@ -124,12 +126,14 @@ class Character(pygame.sprite.Sprite):
     def update_animation(self):
         if self.stop_time < pygame.time.get_ticks():
             self.animating = False
-            self.current_image = self.idles[0]
             self.animate()
         else:
-            frame_index = int(pygame.time.get_ticks() // self.frame_rate)
-            print(frame_index)
-            self.current_image = self.anim_list[frame_index]
+            frame_index = int((pygame.time.get_ticks()-self.start_time) // self.frame_rate)
+            if frame_index == len(self.anim_list):
+                self.current_image = self.anim_list[-1]
+            else:
+                self.current_image = self.anim_list[frame_index]
+
 
 class PlayerCharacter(Character):
     def __init__(self, health=0 ,power=0, name="Test", image_set=None, points=0, lives=0, pos=(0,0), vel=(0,0), move_rate=10):
@@ -140,6 +144,8 @@ class PlayerCharacter(Character):
 # class Enemy(Character):
 #     def init(self,health=random.randint(1,10), power=1, name=random.choice(enemy_names), image_set=None):
 #         Character.__init__(self, health, power, name, image_set)
+
+
 def import_list(file):
     output = []
     open_file = open(file, "r")
