@@ -10,7 +10,7 @@ def main():
     origin = (0, 0)
     player = PlayerCharacter(health=10, power=10, name="Test", image_set="Assets/wizard", pos=(0, 0), move_rate=5)
     max_y = screen.get_height()
-    skeleton = Enemy(pos=(screen.get_width()-2000, random.randint(0,max_y)))
+    skeleton = Enemy(pos=(screen.get_width()-20, random.randint(0,max_y)))
     done = False
     background = pygame.image.load("Assets/Background.png")
     while not done:
