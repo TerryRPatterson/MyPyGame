@@ -10,7 +10,7 @@ def main():
     origin = (0, 0)
     wizard = SpriteGroup("Assets/wizard")
     skeleton = SpriteGroup("Assets/skeleton")
-    RoundControl()
+    RoundControl(skeleton)
     player = PlayerCharacter(health=10, power=10, name="Test",
                              image_set=wizard, pos=(0, 0),
                              move_rate=5)
@@ -135,7 +135,7 @@ class Character(pygame.sprite.Sprite):
 
 class PlayerCharacter(Character):
     def __init__(self, health=10, power=2, name="Player",
-                 image_set=wizard, points=0, lives=3, pos=(0, 0),
+                 image_set=None, points=0, lives=3, pos=(0, 0),
                  vel=(0, 0), move_rate=10):
         super().__init__(health, power, name, image_set, pos, move_rate)
         self.points = points
@@ -144,7 +144,7 @@ class PlayerCharacter(Character):
 
 class Enemy(Character):
     def __init__(self, health=random.randint(1, 10), power=1, name=None,
-                 image_set=skeleton, pos=(0, 0), move_rate=random.randint(1, 3)):
+                 image_set=None, pos=(0, 0), move_rate=random.randint(1, 3)):
         super().__init__(health, power, name, image_set, pos, move_rate)
         print(self.name, self.position)
         self.move(change_vel=(-move_rate, 0))
@@ -194,12 +194,13 @@ class SpriteGroup():
 
 
 class RoundControl():
-    def __init__(self):
+    def __init__(self, image_set):
         self.round = 1
         self.enemies = pygame.sprite.Group()
-        round_start()
+        self.image_set = image_set
+        self.round_start()
         enemy_list_location = "enemy_names.txt"
-        self.name_list = import_list(enemy_list_location)
+        self.names = import_list(enemy_list_location)
 
     def update(self):
         if self.enemies:
@@ -213,7 +214,8 @@ class RoundControl():
         while number_of_enemies > 0:
             enemy = Enemy(pos=(screen.get_width(), random.randint(0,
                                screen.get_height())),
-                          name=random.choice(self.name_list))
+                          name=random.choice(self.names),
+                          image_set=self.image_set)
             self.enemies.add(enemy)
             number_of_enemies -= 1
 
