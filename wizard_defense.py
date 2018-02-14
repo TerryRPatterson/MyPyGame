@@ -79,9 +79,6 @@ class Character(pygame.sprite.Sprite):
 
         self.animate()
 
-    def attack(self, target):
-        if self.alive and target.alive:
-            target.health -= self.power
 
     def move(self, change_vel=(0, 0)):
         """
@@ -140,6 +137,7 @@ class PlayerCharacter(Character):
         super().__init__(health, power, name, image_set, pos, move_rate)
         self.points = points
         self.lives = lives
+    
 
 
 class Enemy(Character):
