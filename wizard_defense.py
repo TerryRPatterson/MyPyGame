@@ -10,7 +10,7 @@ def main():
     origin = (0, 0)
     wizard = SpriteGroup("Assets/wizard")
     skeleton = SpriteGroup("Assets/skeleton")
-    RoundControl(skeleton)
+    Rounds = RoundControl(skeleton)
     player = PlayerCharacter(health=10, power=10, name="Test",
                              image_set=wizard, pos=(0, 0),
                              move_rate=5)
@@ -55,7 +55,7 @@ def main():
                 if event.key == pygame.K_LEFT:
                     player.move(change_vel=(player.move_rate, 0))
 
-        skeleton.update()
+        Rounds.update()
         player.update()
         pygame.display.update()
     pygame.quit()
@@ -198,9 +198,10 @@ class RoundControl():
         self.round = 1
         self.enemies = pygame.sprite.Group()
         self.image_set = image_set
-        self.round_start()
         enemy_list_location = "enemy_names.txt"
         self.names = import_list(enemy_list_location)
+
+        self.round_start()
 
     def update(self):
         if self.enemies:
