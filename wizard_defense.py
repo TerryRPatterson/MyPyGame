@@ -79,6 +79,7 @@ class Character(pygame.sprite.Sprite):
 
         self.animate()
 
+        self.rect = (postion, self.current_image.get_size)
 
     def move(self, change_vel=(0, 0)):
         """
@@ -94,6 +95,7 @@ class Character(pygame.sprite.Sprite):
                          + self.position[1])
         self.update_animation()
         screen.blit(self.current_image, self.position)
+        self.rect = (postion, self.current_image.get_size())
 
     def animate(self, type="idle", duration=0.5):
         if type == "death":
@@ -137,7 +139,9 @@ class PlayerCharacter(Character):
         super().__init__(health, power, name, image_set, pos, move_rate)
         self.points = points
         self.lives = lives
-    
+
+    def attack(self):
+
 
 
 class Enemy(Character):
@@ -217,6 +221,12 @@ class RoundControl():
                           image_set=self.image_set)
             self.enemies.add(enemy)
             number_of_enemies -= 1
-
+class FireBall(PyGame.sprite.sprite):
+    def __init__(self, pos_x, pos_y, power):
+        self.postion = (pos_x,pos_y)
+        self.damage = power
+        self.velocity = power
+    def update(self):
+        
 
 main()
